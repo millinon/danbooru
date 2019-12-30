@@ -1,4 +1,4 @@
-set :user, "danbooru"
+set :user, "bfg9000"
 set :rails_env, "production"
 set :delayed_job_workers, 12
 append :linked_files, ".env.production"

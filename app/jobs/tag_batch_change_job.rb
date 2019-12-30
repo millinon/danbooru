@@ -1,7 +1,7 @@
 class TagBatchChangeJob < ApplicationJob
   class Error < Exception; end
 
-  queue_as :bulk_update
+  queue_as :default
 
   def perform(antecedent, consequent, updater, updater_ip_addr)
     raise Error.new("antecedent is missing") if antecedent.blank?
@@ -28,10 +28,9 @@ class TagBatchChangeJob < ApplicationJob
 
   def migrate_posts(normalized_antecedent, normalized_consequent)
     ::Post.tag_match(normalized_antecedent.join(" ")).find_each do |post|
-      post.with_lock do
-        tags = (post.tag_array - normalized_antecedent + normalized_consequent).join(" ")
-        post.update(tag_string: tags)
-      end
+      post.reload
+      tags = (post.tag_array - normalized_antecedent + normalized_consequent).join(" ")
+      post.update(tag_string: tags)
     end
   end
 

@@ -1,11 +1,10 @@
 class StorageManager::Rclone < StorageManager
   class Error < StandardError; end
-  attr_reader :remote, :bucket, :rclone_path, :rclone_options
+  attr_reader :remote, :bucket, :rclone_options
 
-  def initialize(remote:, bucket:, rclone_path: "rclone", rclone_options: {}, **options)
+  def initialize(remote:, bucket:, rclone_options: {}, **options)
     @remote = remote
     @bucket = bucket
-    @rclone_path = rclone_path
     @rclone_options = rclone_options
     super(**options)
   end
@@ -25,8 +24,8 @@ class StorageManager::Rclone < StorageManager
   end
 
   def rclone(*args)
-    success = system(rclone_path, *rclone_options, *args)
-    raise Error, "rclone #{args.join(" ")}: #{$?}" if !success
+    success = system("rclone", *rclone_options, *args)
+    raise Error, "rclone #{$?}" if !success
   end
 
   def key(path)
